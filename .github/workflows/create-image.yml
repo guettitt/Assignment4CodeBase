@@ -1,27 +1,27 @@
-name: net2008-ass4
-
-on: 
-   push:
-     branches: [main]
-   pull_request:
-     branches: [main]
-
+name: Dockerize Dockerfile
+on: push
 jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
+  build-container:
+    name: build docker container image
+    runs-on: ubuntu-latest 
     steps:
-    - uses: actions/checkout@v2
-    - name: login docker
-      env:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_SECRET }}
-      run:
-        docker login -u $username -p $password
-    - name: build the docker image
-      run: docker build . --file Dockerfile --tag net2008-ass4:v0.1$(date +%s)
-      
-    - name: docker push
-      run: docker push ${{ secrets.DOCKER_USER }}/assignmet4/net2008-ass4:v0.1
+      -name: Checkout code
+       uses: actions/checkout@v2
+      -name: Publish to Github Packages
+       uses: docker/build-push-action@v1
+       with:
+         username: ${{ github.actor }}
+         password: ${{ secrets.GITHUB_TOKEN }}
+         registry: docker.pkg.github.com
+         repository: $ {{ github.repository }}/next
+         tags: latest, ${{ github.run_number }}
+      -name: Publish to Docker Hub
+       uses: docker/build-push-action@v1
+       with:
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+         repository: seesharprun/next
+         tags: latest, ${{ github.run_number }}
+         
+         
+       
