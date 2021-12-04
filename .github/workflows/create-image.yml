@@ -1,0 +1,27 @@
+name: net2008-ass4
+
+on: 
+   push:
+     branches: [main]
+   pull_request:
+     branches: [main]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: login docker
+      env:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_SECRET }}
+      run:
+        docker login -u $username -p $password
+    - name: build the docker image
+      run: docker build . --file Dockerfile --tag net2008-ass4:v0.1$(date +%s)
+      
+    - name: docker push
+      run: docker push ${{ secrets.DOCKER_USER }}/assignmet4/net2008-ass4:v0.1
